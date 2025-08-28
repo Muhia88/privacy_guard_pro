@@ -75,7 +75,7 @@ You will be greeted with the main menu where you can choose to scrub files, mana
 
 ## License
 MIT License
-Copyright (c) <2025> <Privacy Guard Pro>
+Copyright (c) 2025 Privacy Guard Pro
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
