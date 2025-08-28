@@ -20,7 +20,7 @@ class Cli:
 
   def run(self):
     """Main application loop."""
-    console.print("[bold green]Welcome to Privacy Guard Pro![/bold green]")
+    console.print("\n[bold green]Welcome to Privacy Guard Pro![/bold green]")
 
     while True:
       display_main_menu()
