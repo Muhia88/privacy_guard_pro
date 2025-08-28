@@ -209,7 +209,27 @@ class CLI:
     except Exception as e:
       console.print(f"[bold red]An unexpected error occurred with {file_path}: {e}[/bold red]")
 
-  
+  def handle_view_audit_trail(self):
+    """Sub-menu for viewing the audit trail."""
+    while True:
+      console.print("\n[bold cyan]--- Audit Trail ---[/bold cyan]")
+      console.print("1. View All Logs")
+      console.print("2. Find Log by ID")
+      console.print("3. Delete Log Entry")
+      console.print("4. Back to Main Menu")
+      choice = input("> ")
+
+      if choice == "1":
+        logs = FileLog.get_all(self.session)
+        display_logs(logs)
+      elif choice == "2":
+        self.find_log_details()
+      elif choice == "3":
+        self.delete_log()
+      elif choice == "4":
+        break
+      else:
+        console.print("[bold red]Invalid choice.[/bold red]")
 
 
 if __name__ == "__main__":
