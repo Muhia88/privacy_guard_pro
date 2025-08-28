@@ -231,7 +231,35 @@ class CLI:
       else:
         console.print("[bold red]Invalid choice.[/bold red]")
 
+  def find_log_details(self):
+    """Finds and displays details for a specific log."""
+    try:
+      log_id = int(input("Enter the Log ID to view details: "))
+      log = FileLog.find_by_id(self.session, log_id)
+      if log:
+        display_log_details(log)
+      else:
+        console.print("[bold red]Log not found.[/bold red]")
+    except ValueError:
+      console.print("[bold red]Invalid ID.[/bold red]")
 
+  def delete_log(self):
+    """Handles deletion of a log entry."""
+    try:
+      log_id = int(input("Enter the ID of the log entry to delete: "))
+      log = FileLog.find_by_id(self.session, log_id)
+      if log:
+        log.delete(self.session)
+        console.print(f"[green]Log entry {log_id} deleted successfully.[/green]")
+      else:
+        console.print("[bold red]Log entry not found.[/bold red]")
+    except ValueError:
+      console.print("[bold red]Invalid ID format.[/bold red]")
+    except Exception as e:
+      console.print(f"[bold red]An error occurred: {e}[/bold red]")
+      self.session.rollback()
+
+      
 if __name__ == "__main__":
   app = Cli()
   app.run()
