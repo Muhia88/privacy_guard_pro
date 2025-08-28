@@ -5,6 +5,7 @@ from lib.helpers import (
     console,
     display_main_menu,
     display_profiles,
+    get_path_input,
 )
 
 class CLI:
@@ -85,3 +86,7 @@ class CLI:
     except Exception as e:
       console.print(f"[bold red]An error occurred: {e}[/bold red]")
       self.session.rollback()
+
+if __name__ == "__main__":
+  app = Cli()
+  app.run()
