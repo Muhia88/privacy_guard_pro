@@ -112,6 +112,44 @@ class CLI:
       return
     display_metadata(metadata)
 
+    #Choose scrubbing method
+    console.print("\n[bold]How would you like to scrub?[/bold]")
+    console.print("1. Use a Profile")
+    console.print("2. Remove All Metadata")
+    console.print("3. Select Tags Manually")
+    scrub_choice = input("> ")
+
+    profile_id = None
+    tags_to_remove = []
+    remove_all = False
+
+    if scrub_choice == "1":
+      profile = self.select_profile()
+      if not profile: return
+      tags_to_remove = [tag.tag_name for tag in profile.tags_to_remove]
+      profile_id = profile.id
+    elif scrub_choice == "2":
+      remove_all = True
+    elif scrub_choice == "3":
+      console.print("Enter tag names to remove, comma-separated (e.g., GPSInfo, Make, Model):")
+      tags_input = input("> ")
+      tags_to_remove = [tag.strip() for tag in tags_input.split(',')]
+    else:
+      console.print("[bold red]Invalid choice.[/bold red]")
+      return
+      
+    #asks user to modify original files or create copies
+    in_place_choice = input("Overwrite original files? (This is permanent!) [y/n]: ").lower().strip()
+    in_place = in_place_choice == 'y'
+    if in_place:
+      console.print("[bold yellow]Warning: Original files will be overwritten.[/bold yellow]")
+    else:
+      console.print("[green]A scrubbed copy of the files will be created.[/green]")
+
+    #process each file
+    for file_path in files_to_process:
+      self.process_single_file(file_path, tags_to_remove, remove_all, profile_id, in_place)
+
 if __name__ == "__main__":
   app = Cli()
   app.run()
