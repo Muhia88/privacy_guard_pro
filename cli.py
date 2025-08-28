@@ -8,6 +8,8 @@ from lib.helpers import (
     get_path_input,
 )
 
+from lib.scrubber import get_metadata, scrub_file
+
 class CLI:
   def __init__(self):
     self.session = get_db_session()
