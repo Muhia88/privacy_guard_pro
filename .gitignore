@@ -1,0 +1,32 @@
+#database 
+privacy_guard.db
+*.sqlite
+*.sqlite3
+
+#python bytecode
+__pycache__/
+*.py[cod]
+
+#virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+#editor & OS files
+.vscode/
+.idea/
+.DS_Store
+*.swp
+*~
+
+#test / build artifacts
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+
+#app-specific generated files
+*_scrubbed.*
+
+
