@@ -14,7 +14,7 @@ from lib.helpers import (
 
 from lib.scrubber import get_metadata, scrub_file
 
-class CLI:
+class Cli:
   def __init__(self):
     self.session = get_db_session()
 
