@@ -119,3 +119,50 @@ def display_metadata(metadata_dict):
     table.add_row(str(tag), value_str)
   
   console.print(table)
+
+def display_logs(logs):
+  """Displays audit trail logs in a table."""
+  if not logs:
+    console.print("[yellow]No log entries found.[/yellow]")
+    return
+      
+  table = Table(title="Audit Trail", show_header=True, header_style="bold magenta")
+  table.add_column("Log ID", style="dim", width=8)
+  table.add_column("Timestamp")
+  table.add_column("Original File")
+  table.add_column("Profile Used")
+
+  for log in logs:
+    profile_name = log.profile_used.name if log.profile_used else "N/A"
+    table.add_row(
+      str(log.id),
+      log.timestamp.strftime("%Y-%m-%d %H:%M:%S"),
+      log.original_filepath,
+      profile_name
+    )
+  console.print(table)
+
+def display_log_details(log):
+  """Displays detailed information for a single log entry."""
+  console.print(f"\n[bold]Details for Log ID: {log.id}[/bold]")
+  console.print(f"  [cyan]Timestamp[/cyan]: {log.timestamp}")
+  console.print(f"  [cyan]Original File[/cyan]: {log.original_filepath}")
+  console.print(f"  [cyan]Scrubbed File[/cyan]: {log.processed_filepath}")
+  profile_name = log.profile_used.name if log.profile_used else "Manual Scrub"
+  console.print(f"  [cyan]Profile Used[/cyan]: {profile_name}")
+
+  if not log.scrubbed_tags:
+    console.print("[yellow]  No tags were scrubbed for this entry.[/yellow]")
+    return
+
+  table = Table(title="Scrubbed Tags", show_header=True, header_style="bold magenta")
+  table.add_column("Tag Name", style="dim", width=25)
+  table.add_column("Original Value")
+
+  for tag in log.scrubbed_tags:
+    value_str = tag.tag_value
+    if len(value_str) > 75:
+      value_str = f"{value_str[:75]}..."
+    table.add_row(tag.tag_name, value_str)
+  
+  console.print(table)

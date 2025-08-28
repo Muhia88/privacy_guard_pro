@@ -1,3 +1,4 @@
+import os
 import sys
 from lib.db.database import get_db_session
 from lib.db.models import Profile, FileLog
@@ -6,6 +7,9 @@ from lib.helpers import (
     display_main_menu,
     display_profiles,
     get_path_input,
+    display_metadata,
+    display_logs,
+    display_log_details
 )
 
 from lib.scrubber import get_metadata, scrub_file
@@ -149,6 +153,45 @@ class CLI:
     #process each file
     for file_path in files_to_process:
       self.process_single_file(file_path, tags_to_remove, remove_all, profile_id, in_place)
+
+  def process_single_file(self, file_path, tags_to_remove, remove_all, profile_id, in_place):
+    """Processes a single file, scrubs it, and logs the action."""
+    try:
+      #determines the name of the final processed file for logging purposes
+      if in_place:
+        processed_path = file_path
+      else:
+        dir_name, file_name = os.path.split(file_path)
+        name, ext = os.path.splitext(file_name)
+        processed_path = os.path.join(dir_name, f"{name}_scrubbed{ext}")
+      
+      #calls the updated scrub_file function with the in_place argument
+      removed_data, error = scrub_file(
+        filepath=file_path, 
+        tags_to_remove=tags_to_remove, 
+        remove_all=remove_all, 
+        in_place=in_place
+      )
+      
+      if error:
+        console.print(f"[bold red]Could not process {os.path.basename(file_path)}: {error}[/bold red]")
+        return
+
+      if removed_data:
+        FileLog.create(
+          session=self.session,
+          original_path=file_path,
+          processed_path=processed_path,
+          scrubbed_tags_dict=removed_data,
+          profile_id=profile_id
+        )
+        final_filename = os.path.basename(processed_path)
+        console.print(f"[green]Successfully scrubbed {os.path.basename(file_path)} -> {final_filename}[/green]")
+      else:
+        console.print(f"[yellow]No metadata removed from {os.path.basename(file_path)}. File processed.[/yellow]")
+    except Exception as e:
+      console.print(f"[bold red]An unexpected error occurred with {file_path}: {e}[/bold red]")
+
 
 if __name__ == "__main__":
   app = Cli()
