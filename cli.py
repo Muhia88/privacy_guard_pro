@@ -87,6 +87,29 @@ class CLI:
       console.print(f"[bold red]An error occurred: {e}[/bold red]")
       self.session.rollback()
 
+  def handle_scrub_files(self):
+    """Handles the file scrubbing workflow."""
+    path = get_path_input()
+    
+    #determines if path is a file or directory
+    if os.path.isfile(path):
+      files_to_process = [path]
+    else:
+      files_to_process = [os.path.join(path, f) for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
+
+    if not files_to_process:
+      console.print("[yellow]No files found to process.[/yellow]")
+      return
+
+    console.print(f"Found {len(files_to_process)} file(s) to process.")
+    
+    #previews metadata of the first file if several
+    metadata, error = get_metadata(files_to_process[0])
+    if error and "No EXIF" not in error:
+      console.print(f"[bold red]{error}[/bold red]")
+      return
+    display_metadata(metadata)
+
 if __name__ == "__main__":
   app = Cli()
   app.run()

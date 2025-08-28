@@ -99,3 +99,23 @@ def _normalize_path(path):
   #OS-native path representation
   p = os.path.normpath(p)
   return p
+
+def display_metadata(metadata_dict):
+  """Displays metadata in a formatted table."""
+  if not metadata_dict:
+    console.print("[yellow]No metadata found.[/yellow]")
+    return
+
+  table = Table(title="File Metadata", show_header=True, header_style="bold magenta")
+  table.add_column("Tag Name", style="dim", width=25)
+  table.add_column("Value")
+
+  for tag, value in metadata_dict.items():
+    #truncates long byte strings for readability
+    if isinstance(value, bytes) and len(value) > 75:
+      value_str = f"{value[:75]}..."
+    else:
+      value_str = str(value)
+    table.add_row(str(tag), value_str)
+  
+  console.print(table)
