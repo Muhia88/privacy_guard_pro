@@ -82,20 +82,22 @@ def scrub_file(filepath, tags_to_remove=None, remove_all=False, in_place=False):
             if 'GPS' in exif_dict and exif_dict['GPS']:
               removed_data['GPSInfo'] = exif_dict['GPS']
               exif_dict['GPS'] = {}
+            # move to next tag after handling GPSInfo
             continue
 
-            tag_id = name_to_id.get(tag_name)
-            #skips unknown tag names.
-            if tag_id is None:
-              continue
+          # handle non-GPS tags by name -> numeric id lookup
+          tag_id = name_to_id.get(tag_name)
+          #skips unknown tag names.
+          if tag_id is None:
+            continue
 
-            #EXIF data is split into sections (IFDs). 
-            #removes the tag from any IFD it appears in.
-            for ifd_name in ('0th', 'Exif', 'GPS', '1st'):
-              if ifd_name in exif_dict and tag_id in exif_dict[ifd_name]:
-                original_value = exif_dict[ifd_name][tag_id]
-                removed_data[tag_name] = original_value
-                del exif_dict[ifd_name][tag_id]
+          #EXIF data is split into sections (IFDs). 
+          #removes the tag from any IFD it appears in.
+          for ifd_name in ('0th', 'Exif', 'GPS', '1st'):
+            if ifd_name in exif_dict and isinstance(exif_dict[ifd_name], dict) and tag_id in exif_dict[ifd_name]:
+              original_value = exif_dict[ifd_name][tag_id]
+              removed_data[tag_name] = original_value
+              del exif_dict[ifd_name][tag_id]
 
         #ensures selective removal succeeds even on imperfect EXIF blocks.
         def _safe_dump(edict):
