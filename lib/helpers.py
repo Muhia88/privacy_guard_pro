@@ -44,13 +44,22 @@ def display_profiles(profiles):
 
 def get_path_input():
   """Gets a valid file or directory path from the user."""
+  allowed_exit = ('exit', 'quit', 'back')
   while True:
-    path = input("Enter the full path to a file or directory: ").strip()
+    path = input("Enter the full path to a file or directory (or type 'exit' to return): ").strip()
+    if not path:
+      console.print("[bold yellow]No input provided. Please enter a path or type 'exit' to return.[/bold yellow]")
+      continue
+
+    # allow the user to bail back to the calling menu
+    if path.lower() in allowed_exit:
+      return None
+
     #normalizes common user input artifacts like surrounding quotes, ~, and path separators
     path = _normalize_path(path)
     if os.path.exists(path):
       return path
-    console.print(f"[bold red]Error: Path does not exist: {path}. Please try again.[/bold red]")
+    console.print(f"[bold red]Error: Path does not exist: {path}. Please try again or type 'exit' to return.[/bold red]")
 
 def _normalize_path(path):
   """Normalize a user-entered path string.

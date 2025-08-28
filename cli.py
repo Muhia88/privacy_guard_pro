@@ -113,6 +113,10 @@ class Cli:
   def handle_scrub_files(self):
     """Handles the file scrubbing workflow."""
     path = get_path_input()
+    #user chose to exit back to main menu
+    if path is None:
+      console.print("[cyan]Returning to main menu...[/cyan]")
+      return
     
     #determines if path is a file or directory
     if os.path.isfile(path):
