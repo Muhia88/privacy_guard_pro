@@ -22,3 +22,21 @@ def display_main_menu():
     console.print(f"[green]{key}[/green]. {value}")
   #separator line
   console.print("-" * 25)
+
+def display_profiles(profiles):
+  """Displays scrubbing profiles in a table."""
+  if not profiles:
+    console.print("[yellow]No profiles found.[/yellow]")
+    return
+    
+  table = Table(title="Scrubbing Profiles", show_header=True, header_style="bold magenta")
+  table.add_column("ID", style="dim", width=5)
+  table.add_column("Name")
+  table.add_column("Description")
+  table.add_column("Tags to Remove")
+
+  for profile in profiles:
+    tags = ", ".join([tag.tag_name for tag in profile.tags_to_remove])
+    table.add_row(str(profile.id), profile.name, profile.description, tags)
+  
+  console.print(table)
