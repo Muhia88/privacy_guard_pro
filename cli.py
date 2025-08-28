@@ -58,7 +58,24 @@ class CLI:
         break #returns to main menu.
       else:
         console.print("[bold red]Invalid choice.[/bold red]")
-  
+  def select_profile(self):
+    """Lists profiles and lets the user select one."""
+    profiles = Profile.get_all(self.session)
+    if not profiles:
+      console.print("[yellow]No profiles exist. Please create one first.[/yellow]")
+      return None
+    display_profiles(profiles)
+    try:
+      profile_id = int(input("Enter the ID of the profile to use: "))
+      profile = Profile.find_by_id(self.session, profile_id)
+      if not profile:
+        console.print("[bold red]Profile not found.[/bold red]")
+        return None
+      return profile
+    except ValueError:
+      console.print("[bold red]Invalid ID.[/bold red]")
+      return None
+
   def create_profile(self):
     """Handles creation of a new profile."""
     try:
@@ -191,6 +208,8 @@ class CLI:
         console.print(f"[yellow]No metadata removed from {os.path.basename(file_path)}. File processed.[/yellow]")
     except Exception as e:
       console.print(f"[bold red]An unexpected error occurred with {file_path}: {e}[/bold red]")
+
+  
 
 
 if __name__ == "__main__":
