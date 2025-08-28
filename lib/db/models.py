@@ -13,6 +13,11 @@ from sqlalchemy.ext.hybrid import hybrid_property
 
 from .database import Base, engine, Session
 
+#gets the current time(UTC+3 timezone)
+EAT_TIMEZONE = timezone(timedelta(hours=3))
+def get_current_time_eat():
+    """Returns the current time as a timezone-aware datetime object for UTC+3."""
+    return datetime.datetime.now(EAT_TIMEZONE)
 
 class Profile(Base):
   """
@@ -93,8 +98,56 @@ class ProfileTag(Base):
     tag_name = Column(String, nullable=False)
     profile_id = Column(Integer, ForeignKey('profiles.id'))
 
-    # Relationship
+    #Relationships
     profile = relationship('Profile', back_populates='tags_to_remove')
 
     def __repr__(self):
         return f"<ProfileTag(tag_name='{self.tag_name}')>"
+    
+  class FileLog(Base):
+    """Represents a log entry for a file that has been processed."""
+    __tablename__ = 'file_logs'
+
+    id = Column(Integer, primary_key=True)
+    original_filepath = Column(String, nullable=False)
+    processed_filepath = Column(String, nullable=False)
+    timestamp = Column(DateTime(timezone=True), default=get_current_time_eat)
+    profile_used_id = Column(Integer, ForeignKey('profiles.id'), nullable=True)
+
+    #Relationships
+    scrubbed_tags = relationship('ScrubbedTag', back_populates='file_log', cascade="all, delete-orphan")
+    profile_used = relationship('Profile', back_populates='logs')
+
+    def __repr__(self):
+        return f"<FileLog(id={self.id}, original='{self.original_filepath}', time='{self.timestamp}')>"
+
+    @classmethod
+    def create(cls, session, original_path, processed_path, scrubbed_tags_dict, profile_id=None):
+        """A class method to create a new FileLog and its associated ScrubbedTags."""
+        log = cls(
+            original_filepath=original_path,
+            processed_filepath=processed_path,
+            profile_used_id=profile_id
+        )
+        for tag_name, tag_value in scrubbed_tags_dict.items():
+            log.scrubbed_tags.append(ScrubbedTag(tag_name=str(tag_name), tag_value=str(tag_value)))
+        
+        session.add(log)
+        session.commit()
+        return log
+
+    @classmethod
+    def get_all(cls, session):
+        """A class method to retrieve all logs, ordered from newest to oldest."""
+        return session.query(cls).order_by(cls.timestamp.desc()).all()
+
+    @classmethod
+    def find_by_id(cls, session, log_id):
+        """A class method to find a single log by its primary key (id)."""
+        return session.query(cls).get(log_id)
+        
+    def delete(self, session):
+        """An instance method to delete this specific log object from the database."""
+        session.delete(self)
+        session.commit()
+
