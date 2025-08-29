@@ -4,6 +4,8 @@ Privacy Guard Pro is a command-line interface (CLI) application built with Pytho
 
 Digital files often contain hidden Exif (Exchangeable Image File Format) data, which can include personal information like GPS coordinates, camera details, and timestamps. This tool provides an easy way to view and remove this data before sharing your files online.
 
+[Here is a video giving details about the CLI](https://www.loom.com/share/3d85a419ecb44a85b5bebf43e38a4098?sid=4f951519-0f4a-4a66-8a20-40c7bbfbe5f4)
+
 ## Features
 
 -   **Metadata Preview**: View all hidden metadata for a specific file.
